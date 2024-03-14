@@ -79,7 +79,7 @@ def get_textbox_css():
             denen sowohl in 2019 (nasses Jahr) als auch in 2022 (extrem trockenes
             Jahr) Winterweizen im Kanton Schaffhausen angebaut wurde. Zudem ist
             der Unterschied im Ertrag (2022 - 2019) dargestellt. Die räumliche
-            Auflösung des Modell beträgt 10 Meter.</pre>
+            Auflösung des Modells beträgt 10 Meter.</pre>
         </div>
         </div>
         <div style="position: fixed; 
