@@ -72,12 +72,14 @@ def get_textbox_css():
 
     <body>
         <div id="textbox" class="textbox">
-        <div class="textbox-title">Auswirkung von Durre auf Winterweizenertrage</div>
+        <div class="textbox-title">Auswirkung von Dürre auf Winterweizenerträge</div>
         <div class="textbox-content">
             <pre>
-            Die Karte zeigt modellierte Winterweizenertrage von Parzellen, auf
+            Die Karte zeigt modellierte Winterweizenerträge von Parzellen, auf
             denen sowohl in 2019 (nasses Jahr) als auch in 2022 (extrem trockenes
-            Jahr) Winterweizen im Kanton Schaffhausen angebaut wurde.</pre>
+            Jahr) Winterweizen im Kanton Schaffhausen angebaut wurde. Zudem ist
+            der Unterschied im Ertrag (2022 - 2019) dargestellt. Die räumliche
+            Auflösung des Modell beträgt 10 Meter.</pre>
         </div>
         </div>
         <div style="position: fixed; 
@@ -88,7 +90,7 @@ def get_textbox_css():
                 z-index:9999; 
                 font-size:14px;
                 text-align: center;">
-        <img src="https://github.com/terensis/ww_phenology_demo/raw/main/resources/terensis_logo.png" alt="Terensis" style="width: 250px; height: auto;">
+        <img src="https://github.com/terensis/ww_drought_demo/raw/main/resources/terensis_logo.png" alt="Terensis" style="width: 250px; height: auto;">
     </div>
     </body>
     </html>
@@ -131,7 +133,6 @@ def generate_folium_map(
     data_dir: Path,
     output_dir: Path,
     output_name: str = 'index.html',
-    selected_years: list[int] = [2018, 2019, 2020]
 ) -> None:
     """
     Generate a folium map of the data in the data directory to
@@ -140,14 +141,13 @@ def generate_folium_map(
     :param data_dir: directory with the data (geojson files).
     :param output_dir: directory for writing outputs to.
     :param output_name: name of the output file.
-    :param selected_years: list of years to select.
     """
     # create map
     m = folium.Map(
         location=[47.7, 8.6],
         zoom_start=11,
         tiles='cartodbpositron',
-        attr='© Terensis (2023). Basemap data © CartoDB'
+        attr='© Terensis (2024). Basemap data © CartoDB'
     )
 
     # Add custom Terensis style
@@ -188,7 +188,6 @@ def generate_folium_map(
         lazy=True,
         key_on='feature.properties._uid0_',
     )
-
     # and finally adding a tooltip/hover to the choropleth's geojson
     folium.GeoJsonTooltip(['Ertrag 2019 t/ha']).add_to(
         cl219.geojson)
@@ -239,7 +238,6 @@ def generate_folium_map(
     # and finally adding a tooltip/hover to the choropleth's geojson
     folium.GeoJsonTooltip(['Ertrag 2022 t/ha']).add_to(
         cl2022.geojson)
-
     # handle colormap
     for key in cl2022._children:
         if key.startswith('color_map'):
@@ -276,6 +274,10 @@ def generate_folium_map(
         key_on='feature.properties._uid0_',
     )
 
+    # and finally adding a tooltip/hover to the choropleth's geojson
+    folium.GeoJsonTooltip(['Ertragsdifferenz (2022-2019) [t/ha]']).add_to(
+        cl_diff.geojson)
+
     # handle colormap
     for key in cl_diff._children:
         if key.startswith('color_map'):
@@ -285,10 +287,6 @@ def generate_folium_map(
     m.add_child(cl_diff)
     m.add_child(branca_color_map)
     m.add_child(BindColormap(cl_diff, branca_color_map))   
-
-    # and finally adding a tooltip/hover to the choropleth's geojson
-    folium.GeoJsonTooltip(['Ertragsdifferenz (2022-2019) [t/ha]']).add_to(
-        cl_diff.geojson)
 
     # save map
     m.add_child(folium.map.LayerControl(collapsed=False))
